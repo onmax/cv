@@ -7,11 +7,56 @@ import Section from '../components/ui/section.astro';
 import Button from '../components/ui/button.astro';
 import { Globe, Mail, Phone } from 'lucide-astro';
 import { RESUME_DATA } from '../data/resume-data';
+import { PROJECTS, type ProjectCategory } from '../data/projects-data';
+
+const avatarUrl = import.meta.env.BASE_URL + RESUME_DATA.avatarUrl.replace(/^\//, '');
 
 const iconMap = {
   github: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-4"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>`,
   linkedin: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-4"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>`,
   x: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-4"><path d="M4 4l11.733 16h4.267l-11.733 -16z"/><path d="M4 20l6.768 -6.768m2.46 -2.46l6.772 -6.772"/></svg>`,
+};
+
+const ORDERED_CATEGORIES = ['personal', 'nimiq', 'external'] as const satisfies ProjectCategory[];
+
+const CATEGORY_CONFIG: Record<ProjectCategory, { title: string; blurb: string }> = {
+  personal: {
+    title: 'Personal Projects (`onmax`)',
+    blurb: 'Repositories I initiated and lead end-to-end, covering design systems, tooling, and product surfaces driving the Nimiq ecosystem.',
+  },
+  nimiq: {
+    title: 'Nimiq Organization (`nimiq`)',
+    blurb: 'Core contributions delivered as part of the Nimiq team, spanning product launches, documentation, and operational tooling.',
+  },
+  external: {
+    title: 'External Open Source Contributions',
+    blurb: 'Notable work across the wider OSS community where I shipped meaningful improvements or maintained forks.',
+  },
+};
+
+const groupedProjects = {
+  personal: PROJECTS.filter((project) => project.category === 'personal'),
+  nimiq: PROJECTS.filter((project) => project.category === 'nimiq'),
+  external: PROJECTS.filter((project) => project.category === 'external'),
+} satisfies Record<ProjectCategory, typeof PROJECTS>;
+
+const formatCountLabel = (count: number, singular: string, plural?: string) => {
+  const label = count === 1 ? singular : plural ?? `${singular}s`;
+  return `${count.toLocaleString()} ${label}`;
+};
+
+const formatTimeline = (timeline: { start: string | null; end: string | null; duration: string | null }) => {
+  const start = timeline.start ?? '[Add start date]';
+  const end = timeline.end ?? 'Present';
+  const base = `${start} → ${end}`;
+  return timeline.duration ? `${base} (${timeline.duration})` : base;
+};
+
+const formatCounts = (counts: Record<string, number>) => {
+  const entries = Object.entries(counts)
+    .filter(([, value]) => value > 0)
+    .map(([state, value]) => `${formatCountLabel(value, state.toLowerCase())}`);
+  return entries.length ? entries.join(' · ') : 'none';
 };
 ---
 
@@ -97,7 +142,7 @@ const iconMap = {
 
         <Avatar
           class="size-28"
-          src={RESUME_DATA.avatarUrl}
+          src={avatarUrl}
           alt={`${RESUME_DATA.name}'s profile picture`}
           fallback={RESUME_DATA.initials}
         />
@@ -195,46 +240,140 @@ const iconMap = {
         </ul>
       </Section>
 
-      <!-- Projects -->
-      <Section class="print-force-new-page">
-        <h2 class="text-xl font-bold">Side projects</h2>
-        <div class="-mx-3 grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3 print:grid-cols-3 print:gap-2">
-          {RESUME_DATA.projects.map((project) => (
-            <Card class="flex h-full flex-col overflow-hidden border p-3">
-              <div class="p-0">
-                <div class="space-y-1">
-                  <h3 class="font-semibold leading-none text-base">
-                    {project.link ? (
-                      <a href={project.link.href} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 hover:underline">
-                        {project.title}
-                        <span class="size-1 rounded-full bg-green-500"></span>
-                      </a>
-                    ) : (
-                      project.title
-                    )}
-                  </h3>
-                  <div class="hidden font-mono text-xs underline print:visible">
-                    {project.link?.label}
-                  </div>
-                  <p class="font-mono text-xs text-gray-600 print:text-[10px]">
-                    {project.description}
-                  </p>
-                </div>
+      <!-- Projects & Contributions -->
+      <Section class="print-force-new-page space-y-4">
+        <h2 class="text-xl font-bold">Projects &amp; Contributions (Sep 29, 2022 – Sep 29, 2025)</h2>
+        <p class="font-mono text-sm text-foreground/80 print:text-[12px]">
+          Comprehensive catalogue of every public repository where I logged 5+ commits over the last three years. Each entry includes role, scope, highlight examples, and collaboration stats so this page can be curated per application.
+        </p>
+
+        {ORDERED_CATEGORIES.map((category) => {
+          const sectionProjects = groupedProjects[category];
+          if (!sectionProjects.length) return null;
+
+          return (
+            <div class="space-y-3">
+              <div class="space-y-1">
+                <h3 class="text-lg font-semibold">{CATEGORY_CONFIG[category].title}</h3>
+                <p class="font-mono text-xs text-foreground/70 print:text-[11px]">
+                  {CATEGORY_CONFIG[category].blurb}
+                </p>
               </div>
-              <div class="mt-auto flex pt-2">
-                <ul class="mt-2 flex list-none flex-wrap gap-1 p-0">
-                  {project.techStack.map((tech) => (
-                    <li>
-                      <Badge variant="secondary" class="px-1 py-0 text-[10px] print:px-1 print:py-0.5 print:text-[8px] print:leading-tight">
-                        {tech}
-                      </Badge>
-                    </li>
-                  ))}
-                </ul>
+
+              <div class="space-y-3">
+                {sectionProjects.map((project) => (
+                  <Card class="border">
+                    <div class="space-y-3 p-4 print:space-y-2 print:p-3">
+                      <div class="flex flex-col gap-y-1 sm:flex-row sm:items-start sm:justify-between">
+                        <div>
+                          <h4 class="text-base font-semibold leading-tight print:text-sm">
+                            {project.name}
+                            <span class="text-xs font-normal text-foreground/60"> — {project.role}</span>
+                          </h4>
+                          <div class="font-mono text-[11px] text-foreground/60 print:text-[10px]">
+                            {project.nameWithOwner}
+                          </div>
+                        </div>
+                        <div class="flex flex-wrap gap-1">
+                          <Badge variant="secondary" class="px-2 py-0 text-[10px] print:px-1 print:py-0.5 print:text-[8px] print:leading-tight">
+                            {formatCountLabel(project.timeline.commitCount, 'commit')}
+                          </Badge>
+                          {project.timeline.duration && (
+                            <Badge variant="secondary" class="px-2 py-0 text-[10px] print:px-1 print:py-0.5 print:text-[8px] print:leading-tight">
+                              {project.timeline.duration}
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+
+                      <p class="font-mono text-xs text-foreground/80 print:text-[10px]">
+                        {project.summary}
+                      </p>
+
+                      <div class="font-mono text-[11px] text-foreground/70 print:text-[10px]">
+                        Timeline: {formatTimeline(project.timeline)}
+                      </div>
+
+                      <div class="flex flex-wrap gap-1">
+                        {project.stack.map((tech) => (
+                          <Badge variant="secondary" class="px-2 py-0 text-[10px] print:px-1 print:py-0.5 print:text-[8px] print:leading-tight">
+                            {tech}
+                          </Badge>
+                        ))}
+                      </div>
+
+                      <div class="space-y-1">
+                        <h5 class="text-sm font-semibold print:text-xs">Highlights</h5>
+                        <ul class="space-y-1 font-mono text-[11px] text-foreground/80 print:text-[10px]">
+                          {project.highlights.map((highlight) => (
+                            <li>
+                              <span class="font-semibold text-foreground">{highlight.label}</span>: {highlight.examples.join(' · ')}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      <div class="font-mono text-[11px] text-foreground/70 print:text-[10px]">
+                        Collaboration — Pull requests: {formatCounts(project.collaboration.pullRequests)}; Issues: {formatCounts(project.collaboration.issues)}
+                      </div>
+
+                      {(project.collaboration.samplePRs.length > 0 || project.collaboration.sampleIssues.length > 0) && (
+                        <div class="space-y-1 font-mono text-[11px] text-foreground/70 print:text-[10px]">
+                          {project.collaboration.samplePRs.length > 0 && (
+                            <div>
+                              <span class="font-semibold text-foreground">Sample PRs:</span>
+                              <ul class="ml-3 list-disc space-y-0.5">
+                                {project.collaboration.samplePRs.map((pr) => (
+                                  <li>
+                                    <a href={pr.url} target="_blank" rel="noopener noreferrer" class="underline hover:text-foreground/70">
+                                      {pr.title}
+                                    </a>
+                                    <span class="text-foreground/50"> ({pr.state.toLowerCase()})</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                          {project.collaboration.sampleIssues.length > 0 && (
+                            <div>
+                              <span class="font-semibold text-foreground">Sample issues:</span>
+                              <ul class="ml-3 list-disc space-y-0.5">
+                                {project.collaboration.sampleIssues.map((issue) => (
+                                  <li>
+                                    <a href={issue.url} target="_blank" rel="noopener noreferrer" class="underline hover:text-foreground/70">
+                                      {issue.title}
+                                    </a>
+                                    <span class="text-foreground/50"> ({issue.state.toLowerCase()})</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      <div class="font-mono text-[11px] text-foreground/70 print:text-[10px]">
+                        Links:{' '}
+                        {project.links.map((link, index) => (
+                          <Fragment>
+                            {index > 0 && <span> · </span>}
+                            <a href={link.url} target="_blank" rel="noopener noreferrer" class="underline hover:text-foreground/70">
+                              {link.label}
+                            </a>
+                          </Fragment>
+                        ))}
+                      </div>
+
+                      <div class="font-mono text-[11px] text-foreground/70 print:text-[10px]">
+                        Impact: {project.impact}
+                      </div>
+                    </div>
+                  </Card>
+                ))}
               </div>
-            </Card>
-          ))}
-        </div>
+            </div>
+          );
+        })}
       </Section>
     </section>
   </main>
