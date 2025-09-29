@@ -114,6 +114,12 @@ const formatCounts = (counts: Record<string, number>) => {
             ))}
           </ul>
 
+          <div class="pt-2 print:hidden">
+            <Button variant="outline" size="sm" href="/applications/maxiv/">
+              MAX IV Application CV
+            </Button>
+          </div>
+
           <!-- Print contact -->
           <div class="hidden gap-x-2 font-mono text-sm text-foreground/80 print:flex print:text-[12px]">
             {RESUME_DATA.personalWebsiteUrl && (
@@ -137,6 +143,8 @@ const formatCounts = (counts: Record<string, number>) => {
                 {RESUME_DATA.contact.tel}
               </a>
             )}
+            <span>/</span>
+            <span>MAX IV CV: /applications/maxiv/</span>
           </div>
         </div>
 

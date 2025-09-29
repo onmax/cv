@@ -1,0 +1,376 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Avatar from "../../components/ui/avatar.astro";
+import Section from "../../components/ui/section.astro";
+import Card from "../../components/ui/card.astro";
+import Badge from "../../components/ui/badge.astro";
+import Button from "../../components/ui/button.astro";
+import { ArrowLeft, ExternalLink, Globe, Mail, Phone } from "lucide-astro";
+import { RESUME_DATA } from "../../data/resume-data";
+import { PROJECTS, type ProjectEntry } from "../../data/projects-data";
+
+const avatarUrl = (import.meta.env.BASE_URL.replace(/\/$/, "") + RESUME_DATA.avatarUrl);
+
+const job = {
+  title: "Fullstack Web Developer",
+  organisation: "MAX IV Laboratory, Lund University",
+  location: "Lund, Sweden",
+  url: "https://lu.varbi.com/en/what:job/jobID:851228/type:job/where:4/apply:1",
+  published: "15 Sep 2025",
+  deadline: "05 Oct 2025",
+  reference: "PA2025/2435",
+};
+
+const projectIds = [
+  "nimiq/crypto-map",
+  "nimiq/validators-api",
+  "nimiq/feedback",
+  "onmax/nimiq-changelog",
+  "onmax/albatross-rpc-client-ts",
+];
+
+const projectMap = new Map(PROJECTS.map((project) => [project.nameWithOwner, project]));
+const featuredProjects = projectIds
+  .map((id) => projectMap.get(id))
+  .filter((project): project is ProjectEntry => Boolean(project));
+
+const formatDate = (iso: string | null) =>
+  iso ? new Date(iso).toLocaleDateString("en-US", { month: "short", year: "numeric" }) : null;
+
+const formatTimeline = (project: ProjectEntry) => {
+  const start = formatDate(project.timeline.start) ?? "[Add start date]";
+  const end = project.timeline.end ? formatDate(project.timeline.end) : "Present";
+  const duration = project.timeline.duration ? ` (${project.timeline.duration})` : "";
+  return `${start} -> ${end}${duration}`;
+};
+
+const formatCommitCount = (count: number) =>
+  `${count.toLocaleString()} ${count === 1 ? "commit" : "commits"}`;
+
+const getProjectLabel = (id: string) => projectMap.get(id)?.nameWithOwner ?? id;
+
+const focusAreas = [
+  {
+    title: "Facility and Experiment Interfaces",
+    summary:
+      "Designing responsive, data-heavy UIs that keep operators and researchers informed across devices.",
+    contributions: [
+      {
+        projectId: "nimiq/crypto-map",
+        detail:
+          "Scaled a geospatial Vue application that aggregates and normalizes global business data, maintaining more than 1,000 commits across map performance, ingestion scripts, and Slack-driven moderation workflows.",
+      },
+      {
+        projectId: "nimiq/validators-api",
+        detail:
+          "Enhanced validator monitoring dashboards with richer grid utilities, JSON data feeds, and lint automation so stakeholders see the latest network state without manual refreshes.",
+      },
+    ],
+    stack: ["TypeScript", "Vue", "Supabase", "Geospatial data", "CI tooling"],
+  },
+  {
+    title: "Operational Reliability and Support",
+    summary:
+      "Keeping production services observable and support-ready through automation, alerting, and rapid fixes.",
+    contributions: [
+      {
+        projectId: "onmax/nimiq-changelog",
+        detail:
+          "Built a Cloudflare Workers service that composes changelog digests from multiple repositories, runs multi-model LLM comparisons, and threads results into Slack with attachments for fast incident response.",
+      },
+      {
+        projectId: "nimiq/feedback",
+        detail:
+          "Maintains the customer feedback intake platform, leading dependency updates, TypeScript hardening, and UI fixes so the team can triage issues without disruption.",
+      },
+    ],
+    stack: ["Cloudflare Workers", "Slack API", "Nuxt", "TypeScript", "Incident readiness"],
+  },
+  {
+    title: "Typed APIs and Data Services",
+    summary:
+      "Delivering trustworthy data contracts that bridge complex domains with frontend teams.",
+    contributions: [
+      {
+        projectId: "onmax/albatross-rpc-client-ts",
+        detail:
+          "Authored and maintain a typed RPC client that exports JSON schemas, enforces validation, and ships frequent releases powering downstream services across the ecosystem.",
+      },
+      {
+        projectId: "[Add Python integration project]",
+        detail: "[Add narrative covering Python or Django collaboration once available]",
+      },
+    ],
+    stack: ["TypeScript", "JSON Schema", "RPC", "Automated releases"],
+  },
+];
+
+const experienceHighlights = [
+  {
+    company: "Nimiq",
+    role: "Frontend Developer - 2022 to Present",
+    bullets: [
+      "Lead the UI strategy for multiple public-facing products, coordinating with designers, backend services, and community stakeholders.",
+      "Operate end-to-end on Vue and Nuxt stacks, from component libraries to CI pipelines, ensuring rapid iteration without regressions.",
+      "Partner with ecosystem teams on data products such as Crypto Map and Validators API that mirror MAX IV needs for accurate operational dashboards.",
+    ],
+  },
+  {
+    company: "Inetum (LACChain and Alastria)",
+    role: "SSI Researcher and Fullstack Developer - 2020 to 2021",
+    bullets: [
+      "Delivered interoperable identity services across consortium blockchains, balancing strict security requirements with user experience.",
+      "Collaborated with multidisciplinary teams across Europe, practicing the remote-first communication style MAX IV highlights.",
+      "Managed Docker-based deployments and CI reviews, translating research specifications into production services.",
+    ],
+  },
+];
+
+const nextSteps = [
+  "Draft a role-specific cover letter pairing these highlights with MAX IV priorities.",
+  "Prepare examples that translate blockchain and operations work into accelerator scenarios such as proposal workflows or diagnostic dashboards.",
+  "Confirm references and availability for the posted timeline; fill in any placeholders above.",
+];
+---
+
+<Layout>
+  <main class="container relative mx-auto scroll-my-12 overflow-auto p-4 print:p-11 md:p-16" id="main-content">
+    <section class="mx-auto w-full max-w-2xl space-y-8 bg-white print:space-y-4">
+      <header class="flex items-center justify-between gap-x-6">
+        <div class="flex-1 space-y-1.5">
+          <p class="text-xs font-mono uppercase tracking-wide text-foreground/60">Application-ready CV</p>
+          <h1 class="text-2xl font-bold">{RESUME_DATA.name}</h1>
+          <p class="max-w-md text-pretty font-mono text-sm text-foreground/80 print:text-[12px]">
+            Tailored profile for the {job.title} role at {job.organisation}.
+          </p>
+          <p class="max-w-md items-center text-pretty font-mono text-xs text-foreground">
+            <a
+              class="inline-flex gap-x-1.5 align-baseline leading-none hover:underline"
+              href={RESUME_DATA.locationLink}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Globe class="size-3" />
+              {RESUME_DATA.location}
+            </a>
+          </p>
+          <ul class="flex list-none gap-x-1 pt-1 font-mono text-sm text-foreground/80 print:hidden">
+            <li>
+              <Button class="gap-x-1" variant="outline" size="sm" href="/">
+                <ArrowLeft class="size-4" />
+                Main CV
+              </Button>
+            </li>
+            {RESUME_DATA.personalWebsiteUrl && (
+              <li>
+                <Button class="size-8" variant="outline" size="icon" href={RESUME_DATA.personalWebsiteUrl}>
+                  <Globe class="size-4" />
+                </Button>
+              </li>
+            )}
+            {RESUME_DATA.contact.email && (
+              <li>
+                <Button class="size-8" variant="outline" size="icon" href={`mailto:${RESUME_DATA.contact.email}`}>
+                  <Mail class="size-4" />
+                </Button>
+              </li>
+            )}
+            {RESUME_DATA.contact.tel && (
+              <li>
+                <Button class="size-8" variant="outline" size="icon" href={`tel:${RESUME_DATA.contact.tel}`}>
+                  <Phone class="size-4" />
+                </Button>
+              </li>
+            )}
+          </ul>
+        </div>
+        <Avatar class="size-24 md:size-28" src={avatarUrl} alt={`${RESUME_DATA.name}'s profile picture`} fallback={RESUME_DATA.initials} />
+      </header>
+
+      <Section>
+        <Card class="border-foreground/10">
+          <div class="flex flex-col gap-y-4 p-6">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <p class="text-xs font-mono uppercase tracking-wider text-foreground/60">Role targeting</p>
+                <h2 class="text-xl font-semibold leading-none text-foreground">{job.title}</h2>
+                <p class="text-sm font-mono text-foreground/70">{job.organisation}</p>
+              </div>
+              <Button variant="outline" size="sm" href={job.url}>
+                View posting
+                <ExternalLink class="size-4" />
+              </Button>
+            </div>
+            <dl class="grid gap-2 font-mono text-xs text-foreground/70 sm:grid-cols-2">
+              <div>
+                <dt class="uppercase tracking-wide">Location</dt>
+                <dd class="text-sm text-foreground">{job.location}</dd>
+              </div>
+              <div>
+                <dt class="uppercase tracking-wide">Published</dt>
+                <dd class="text-sm text-foreground">{job.published}</dd>
+              </div>
+              <div>
+                <dt class="uppercase tracking-wide">Deadline</dt>
+                <dd class="text-sm text-foreground">{job.deadline}</dd>
+              </div>
+              <div>
+                <dt class="uppercase tracking-wide">Reference</dt>
+                <dd class="text-sm text-foreground">{job.reference}</dd>
+              </div>
+            </dl>
+          </div>
+        </Card>
+      </Section>
+
+      <Section>
+        <h2 class="text-xl font-bold">Targeted Summary</h2>
+        <Card class="border-foreground/10">
+          <div class="space-y-3 p-6 text-pretty font-mono text-sm text-foreground/80 print:text-[12px]">
+            <p>
+              I specialise in TypeScript-focused fullstack work, pairing Vue and Nuxt frontends with service integrations
+              and DevOps-friendly delivery. Recent projects channel operational data into actionable dashboards, bots, and
+              documentation, mirroring the close collaboration MAX IV expects between accelerator experts and software
+              engineers.
+            </p>
+            <p>
+              My focus is to translate complex domain knowledge such as blockchain economics, identity compliance, and
+              community feedback into reliable web products. That experience maps directly to beamline interfaces,
+              experiment scheduling, and FAIR-ready data flows. I am ready to join the software support rotation, own
+              handovers, and expand into the Python and .NET surfaces used across the facility.
+            </p>
+          </div>
+        </Card>
+      </Section>
+
+      <Section class="space-y-4">
+        <div class="flex items-baseline justify-between">
+          <h2 class="text-xl font-bold">Role Alignment</h2>
+          <p class="text-xs font-mono uppercase tracking-wide text-foreground/60">Key focus areas</p>
+        </div>
+        <div class="space-y-4">
+          {focusAreas.map((area) => (
+            <Card class="border-foreground/10">
+              <div class="flex flex-col gap-y-4 p-6">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                  <h3 class="text-lg font-semibold text-foreground">{area.title}</h3>
+                  <div class="flex flex-wrap gap-1">
+                    {area.stack.map((tech) => (
+                      <Badge variant="secondary" class="text-xs print:px-1 print:py-0.5 print:text-[8px]">
+                        {tech}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+                <p class="text-sm font-mono text-foreground/70 text-pretty">{area.summary}</p>
+                <ul class="space-y-2 text-sm font-mono text-foreground/90">
+                  {area.contributions.map((item) => (
+                    <li>
+                      <span class="font-semibold">{getProjectLabel(item.projectId)}</span>: {item.detail}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </Card>
+          ))}
+        </div>
+      </Section>
+
+      <Section class="space-y-4">
+        <div class="flex items-baseline justify-between">
+          <h2 class="text-xl font-bold">Featured Projects</h2>
+          <p class="text-xs font-mono uppercase tracking-wide text-foreground/60">{featuredProjects.length} repositories</p>
+        </div>
+        <div class="space-y-4">
+          {featuredProjects.map((project) => (
+            <Card class="border-foreground/10">
+              <div class="flex flex-col gap-y-4 p-6">
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <h3 class="text-lg font-semibold text-foreground">{project.name}</h3>
+                    <p class="text-xs font-mono uppercase tracking-wide text-foreground/60">{project.role}</p>
+                  </div>
+                  <div class="flex flex-wrap gap-1">
+                    {project.stack.map((tech) => (
+                      <Badge variant="outline" class="text-xs print:px-1 print:py-0.5 print:text-[8px]">
+                        {tech}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+                <div class="text-sm font-mono text-foreground/80 text-pretty">
+                  {project.summary}
+                </div>
+                <dl class="grid gap-2 font-mono text-xs text-foreground/70 sm:grid-cols-3">
+                  <div>
+                    <dt class="uppercase tracking-wide">Timeline</dt>
+                    <dd class="text-sm text-foreground">{formatTimeline(project)}</dd>
+                  </div>
+                  <div>
+                    <dt class="uppercase tracking-wide">Commits</dt>
+                    <dd class="text-sm text-foreground">{formatCommitCount(project.timeline.commitCount)}</dd>
+                  </div>
+                  <div>
+                    <dt class="uppercase tracking-wide">Links</dt>
+                    <dd class="flex flex-wrap gap-2 text-sm text-foreground">
+                      {project.links.map((link) => (
+                        <a class="underline decoration-dotted underline-offset-4 hover:text-foreground/70" href={link.url}>
+                          {link.label}
+                        </a>
+                      ))}
+                    </dd>
+                  </div>
+                </dl>
+                <div class="space-y-2">
+                  <p class="text-xs font-mono uppercase tracking-wide text-foreground/60">Highlights</p>
+                  <ul class="space-y-1 text-sm font-mono text-foreground/90">
+                    {project.highlights.slice(0, 3).map((highlight) => (
+                      <li>
+                        <span class="font-semibold">{highlight.label}</span>: {highlight.count.toLocaleString()} updates
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
+      </Section>
+
+      <Section class="space-y-4">
+        <div class="flex items-baseline justify-between">
+          <h2 class="text-xl font-bold">Experience Alignment</h2>
+          <p class="text-xs font-mono uppercase tracking-wide text-foreground/60">Team fit and operations</p>
+        </div>
+        <div class="space-y-4">
+          {experienceHighlights.map((item) => (
+            <Card class="border-foreground/10">
+              <div class="space-y-3 p-6">
+                <div>
+                  <h3 class="text-lg font-semibold text-foreground">{item.company}</h3>
+                  <p class="text-xs font-mono uppercase tracking-wide text-foreground/60">{item.role}</p>
+                </div>
+                <ul class="space-y-2 text-sm font-mono text-foreground/80">
+                  {item.bullets.map((bullet) => (
+                    <li>{bullet}</li>
+                  ))}
+                </ul>
+              </div>
+            </Card>
+          ))}
+        </div>
+      </Section>
+
+      <Section>
+        <h2 class="text-xl font-bold">Next Steps</h2>
+        <Card class="border-foreground/10">
+          <ol class="list-decimal space-y-2 p-6 pl-8 text-sm font-mono text-foreground/80">
+            {nextSteps.map((step) => (
+              <li>{step}</li>
+            ))}
+          </ol>
+        </Card>
+      </Section>
+    </section>
+  </main>
+</Layout>
