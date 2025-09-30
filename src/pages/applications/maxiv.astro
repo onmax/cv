@@ -58,15 +58,15 @@ const focusAreas = [
       {
         projectId: "nimiq/crypto-map",
         detail:
-          "Scaled a geospatial Vue application that aggregates and normalizes global business data, maintaining more than 1,000 commits across map performance, ingestion scripts, and Slack-driven moderation workflows.",
+          "Scaled a geospatial Vue application that normalizes 30k+ locations, introduced build-time clustering pipelines, and tuned map rendering so support teams can surface accurate merchant data in milliseconds.",
       },
       {
         projectId: "nimiq/validators-api",
         detail:
-          "Enhanced validator monitoring dashboards with richer grid utilities, JSON data feeds, and lint automation so stakeholders see the latest network state without manual refreshes.",
+          "Designed and shipped the validator health scoring engine—running on Cloudflare with scheduled blockchain reads and Nuxt-based dashboards—that operations uses to flag validator misbehavior automatically.",
       },
     ],
-    stack: ["TypeScript", "Vue", "Supabase", "Geospatial data", "CI tooling"],
+    stack: ["TypeScript", "Vue", "Geospatial data", "Cloudflare Workers", "Data pipelines"],
   },
   {
     title: "Operational Reliability and Support",
@@ -83,8 +83,13 @@ const focusAreas = [
         detail:
           "Maintains the customer feedback intake platform, leading dependency updates, TypeScript hardening, and UI fixes so the team can triage issues without disruption.",
       },
+      {
+        projectId: "Mimic FastAPI Testing",
+        detail:
+          "Lead end-to-end and unit testing for an internal FastAPI + PostgreSQL service, building regression coverage around Qt Rant workflows to stabilize the CI pipeline despite limited production Python exposure.",
+      },
     ],
-    stack: ["Cloudflare Workers", "Slack API", "Nuxt", "TypeScript", "Incident readiness"],
+    stack: ["Cloudflare Workers", "Slack API", "Nuxt", "TypeScript", "Test automation"],
   },
   {
     title: "Typed APIs and Data Services",
@@ -97,8 +102,9 @@ const focusAreas = [
           "Authored and maintain a typed RPC client that exports JSON schemas, enforces validation, and ships frequent releases powering downstream services across the ecosystem.",
       },
       {
-        projectId: "[Add Python integration project]",
-        detail: "[Add narrative covering Python or Django collaboration once available]",
+        projectId: "nimiq/validators-api",
+        detail:
+          "Implemented the validator scoring algorithm and scheduled blockchain ingestion so downstream services consume consistent, type-safe metrics without patching legacy code.",
       },
     ],
     stack: ["TypeScript", "JSON Schema", "RPC", "Automated releases"],
@@ -110,9 +116,9 @@ const experienceHighlights = [
     company: "Nimiq",
     role: "Frontend Developer - 2022 to Present",
     bullets: [
-      "Lead the UI strategy for multiple public-facing products, coordinating with designers, backend services, and community stakeholders.",
-      "Operate end-to-end on Vue and Nuxt stacks, from component libraries to CI pipelines, ensuring rapid iteration without regressions.",
-      "Partner with ecosystem teams on data products such as Crypto Map and Validators API that mirror MAX IV needs for accurate operational dashboards.",
+      "Lead the UI and data strategy for public-facing products, coordinating designers, backend services, and community stakeholders across time zones.",
+      "Operate end-to-end on Vue and Nuxt stacks, from component libraries and design systems to Cloudflare Workers, ensuring rapid iteration without regressions.",
+      "Own legacy sustainment for the nine-year-old Nimiq Wallet while shipping new features, documenting pathways so others can contribute safely.",
     ],
   },
   {
@@ -228,16 +234,17 @@ const nextSteps = [
         <Card class="border-foreground/10">
           <div class="space-y-3 p-6 text-pretty font-mono text-sm text-foreground/80 print:text-[12px]">
             <p>
-              I specialise in TypeScript-focused fullstack work, pairing Vue and Nuxt frontends with service integrations
-              and DevOps-friendly delivery. Recent projects channel operational data into actionable dashboards, bots, and
-              documentation, mirroring the close collaboration MAX IV expects between accelerator experts and software
-              engineers.
+              I specialise in TypeScript-focused fullstack work, pairing Vue and Nuxt frontends with data services that I
+              also maintain. My remit at Nimiq spans public sites, Cloudflare-backed APIs, and automation that keeps a
+              monetary ecosystem stable—mirroring the cross-functional collaboration MAX IV notes between accelerator
+              experts and software engineers.
             </p>
             <p>
-              My focus is to translate complex domain knowledge such as blockchain economics, identity compliance, and
-              community feedback into reliable web products. That experience maps directly to beamline interfaces,
-              experiment scheduling, and FAIR-ready data flows. I am ready to join the software support rotation, own
-              handovers, and expand into the Python and .NET surfaces used across the facility.
+              Over the last three years I have owned both greenfield and legacy systems, from the 30k+ location Crypto Map
+              to the nine-year-old Nimiq Wallet. That mix makes me comfortable designing new pipelines, debugging older
+              Vue 2 stacks, and documenting upgrades so colleagues can execute support rotations with confidence. I bring
+              light Python experience (recent FastAPI test ownership) and am eager to deepen it under your mentorship while
+              contributing immediately in TypeScript.
             </p>
           </div>
         </Card>
