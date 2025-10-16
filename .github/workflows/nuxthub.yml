@@ -1,5 +1,12 @@
 name: Deploy to NuxtHub
-on: push
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'demos/realtime-emojis/**'
+      - '.github/workflows/nuxthub.yml'
+  workflow_dispatch:
 
 jobs:
   deploy:
@@ -8,6 +15,9 @@ jobs:
     permissions:
       contents: read
       id-token: write
+    concurrency:
+      group: nuxthub-${{ github.ref }}
+      cancel-in-progress: true
     defaults:
       run:
         working-directory: demos/realtime-emojis
@@ -18,23 +28,24 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 10
+          run_install: false
 
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 20
           cache: 'pnpm'
           cache-dependency-path: demos/realtime-emojis/pnpm-lock.yaml
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
 
       - name: Ensure NuxtHub module is installed
         run: pnpx nuxthub@latest ensure
 
       - name: Build & Deploy to NuxtHub
+        if: ${{ secrets.NUXTHUB_PROJECT_KEY != '' }}
         uses: nuxt-hub/action@v2
         with:
-          project-key: cv-ccjn
+          project-key: ${{ secrets.NUXTHUB_PROJECT_KEY }}
           directory: demos/realtime-emojis
