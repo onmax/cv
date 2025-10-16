@@ -4,12 +4,12 @@ export const RESUME_DATA = {
   location: "Lund, Sweden",
   locationLink: "https://www.google.com/maps/place/Lund",
   about: "Fullstack Developer passionate about creating innovative web applications.",
-  summary: "Fullstack Developer with 6+ years of experience building innovative web applications. Specialized in Vue ecosystem and modern frontend frameworks. Proven track record in blockchain, SSI, and data science projects. Passionate about solving complex challenges with creative and efficient solutions.",
+  summary: "Fullstack Developer with 7 years of experience building innovative web applications. Specialized in Vue ecosystem and modern frontend frameworks. Proven track record in blockchain, SSI, and data science projects. Passionate about solving complex challenges with creative and efficient solutions.",
   avatarUrl: "/maxi.jpg",
   personalWebsiteUrl: "https://onmax.dev",
   contact: {
-    email: "maximo.garcia.martinez@outlook.com",
-    tel: "+34652957762",
+    email: "maximogarciamtnez@gmail.com",
+    tel: "+34 652 957 762",
     social: [
       {
         name: "GitHub",
@@ -128,6 +128,16 @@ export const RESUME_DATA = {
         label: "github.com",
         href: "https://github.com/onmax/albatross-rpc-client-ts",
       },
+    },
+  ],
+  publications: [
+    {
+      title: "LACChain Framework for Permissioned Public Blockchain Networks: From Blockchain Technology to Blockchain Networks",
+      publisher: "Inter-American Development Bank (IDB)",
+      city: "Washington, D.C.",
+      year: "2020",
+      url: "https://publications.iadb.org/publications/english/document/LACChain-Framework-for-Permissioned-Public-Blockchain-Networks-From-Blockchain-Technology-to-Blockchain-Networks.pdf",
+      description: "Technical framework publication for LACChain permissioned blockchain networks. Served as the technical liaison between Alastria (Spain/Europe) and LACChain (Latin America), contributing to the architecture design, security specifications, and cross-organizational collaboration.",
     },
   ],
 } as const;

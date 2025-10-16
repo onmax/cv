@@ -1,0 +1,136 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Button from '../components/ui/button.astro';
+import { RESUME_DATA } from '../data/resume-data';
+
+const avatarUrl = (import.meta.env.BASE_URL.replace(/\/$/, '') + RESUME_DATA.avatarUrl);
+---
+
+<Layout>
+  <main class="container relative mx-auto scroll-my-12 overflow-auto p-4 md:p-16">
+    <div class="mx-auto w-full max-w-2xl space-y-8">
+      <header class="space-y-2">
+        <h1 class="text-3xl font-bold">Download Avatar</h1>
+        <p class="text-foreground/70">Preview and download your processed avatar image</p>
+      </header>
+
+      <div class="space-y-6">
+        <div class="space-y-4">
+          <h2 class="text-xl font-semibold">Original Image</h2>
+          <div class="flex justify-center">
+            <img
+              id="originalImg"
+              src={avatarUrl}
+              alt="Original avatar"
+              class="size-64 rounded-lg"
+              crossorigin="anonymous"
+            />
+          </div>
+        </div>
+
+        <div class="space-y-4">
+          <h2 class="text-xl font-semibold">Processed Image (with transformations)</h2>
+          <div class="flex justify-center">
+            <canvas
+              id="processedCanvas"
+              class="size-64 rounded-lg border"
+            ></canvas>
+          </div>
+        </div>
+
+        <div class="flex gap-4">
+          <Button id="downloadBtn" variant="default">
+            Download PNG
+          </Button>
+          <a href="/" class="text-sm text-foreground/60 hover:text-foreground hover:underline inline-flex items-center">
+            ← Back to home
+          </a>
+        </div>
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<script>
+  const img = document.getElementById('originalImg') as HTMLImageElement;
+  const canvas = document.getElementById('processedCanvas') as HTMLCanvasElement;
+  const downloadBtn = document.getElementById('downloadBtn') as HTMLButtonElement;
+
+  function processImage() {
+    if (!img.complete) {
+      img.addEventListener('load', processImage);
+      return;
+    }
+
+    // Set canvas size to match output (square aspect ratio)
+    const size = 512; // Output size
+    canvas.width = size;
+    canvas.height = size;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Calculate cropping to match object-position: center 30%
+    const imgAspect = img.naturalWidth / img.naturalHeight;
+
+    // For object-fit: cover on a square canvas
+    let sourceWidth, sourceHeight, sourceX, sourceY;
+
+    if (imgAspect > 1) {
+      // Image is wider than tall
+      sourceHeight = img.naturalHeight;
+      sourceWidth = sourceHeight; // Take a square crop
+      sourceX = (img.naturalWidth - sourceWidth) / 2;
+      sourceY = img.naturalHeight * 0.30 - sourceHeight / 2; // 30% from top
+    } else {
+      // Image is taller than wide
+      sourceWidth = img.naturalWidth;
+      sourceHeight = sourceWidth; // Take a square crop
+      sourceX = 0;
+      sourceY = img.naturalHeight * 0.30 - sourceHeight / 2; // 30% from top
+    }
+
+    // Ensure we don't go out of bounds
+    sourceY = Math.max(0, Math.min(sourceY, img.naturalHeight - sourceHeight));
+    sourceX = Math.max(0, Math.min(sourceX, img.naturalWidth - sourceWidth));
+
+    // Draw the cropped and positioned image
+    ctx.drawImage(
+      img,
+      sourceX,
+      sourceY,
+      sourceWidth,
+      sourceHeight,
+      0,
+      0,
+      size,
+      size
+    );
+
+    // Apply rounded corners
+    const cornerRadius = 8;
+    ctx.globalCompositeOperation = 'destination-in';
+    ctx.beginPath();
+    ctx.roundRect(0, 0, size, size, cornerRadius);
+    ctx.fill();
+    ctx.globalCompositeOperation = 'source-over';
+  }
+
+  downloadBtn.addEventListener('click', () => {
+    canvas.toBlob((blob) => {
+      if (!blob) return;
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'avatar-maximo-garcia.png';
+      a.click();
+      URL.revokeObjectURL(url);
+    }, 'image/png');
+  });
+
+  if (img.complete) {
+    processImage();
+  } else {
+    img.addEventListener('load', processImage);
+  }
+</script>

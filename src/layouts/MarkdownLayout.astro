@@ -1,0 +1,92 @@
+---
+import '../styles/globals.css';
+
+interface Props {
+  frontmatter?: {
+    title?: string;
+    company?: string;
+    datePosted?: string;
+    applicationDeadline?: string;
+    url?: string;
+    referenceNumber?: string;
+    location?: string;
+  };
+}
+
+const { frontmatter } = Astro.props;
+const title = frontmatter?.title || 'Document';
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&display=swap" rel="stylesheet">
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+  </head>
+  <body class="font-serif text-[15px]">
+    <main class="container mx-auto max-w-5xl p-8 print:max-w-none print:p-12">
+      <nav class="mb-8 print:hidden">
+        <a href={base || '/'} class="text-sm text-foreground/60 hover:text-foreground hover:underline">
+          ← Back to Applications
+        </a>
+      </nav>
+
+      {frontmatter && (
+        <div class="mb-6 border-b pb-4 print:hidden">
+          {frontmatter.company && (
+            <p class="text-sm text-foreground/60">{frontmatter.company}</p>
+          )}
+          {frontmatter.location && (
+            <p class="text-sm text-foreground/60">{frontmatter.location}</p>
+          )}
+          {frontmatter.url && (
+            <p class="mt-2 text-sm">
+              <a href={frontmatter.url} target="_blank" rel="noopener noreferrer" class="text-foreground/80 hover:underline">
+                View original posting →
+              </a>
+            </p>
+          )}
+          <div class="mt-2 flex gap-4 text-xs text-foreground/60">
+            {frontmatter.datePosted && (
+              <span>Posted: {new Date(frontmatter.datePosted).toLocaleDateString()}</span>
+            )}
+            {frontmatter.applicationDeadline && (
+              <span>Deadline: {new Date(frontmatter.applicationDeadline).toLocaleDateString()}</span>
+            )}
+            {frontmatter.referenceNumber && (
+              <span>Ref: {frontmatter.referenceNumber}</span>
+            )}
+          </div>
+        </div>
+      )}
+
+      <article class="prose max-w-none">
+        <slot />
+      </article>
+    </main>
+  </body>
+</html>
+
+<style is:global>
+  body.font-serif {
+    font-family: 'Merriweather', Georgia, serif;
+  }
+
+  @media print {
+    body {
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+
+    nav {
+      display: none !important;
+    }
+  }
+</style>

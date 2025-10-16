@@ -1,388 +1,214 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import Avatar from '../components/ui/avatar.astro';
-import Badge from '../components/ui/badge.astro';
 import Card from '../components/ui/card.astro';
-import Section from '../components/ui/section.astro';
-import Button from '../components/ui/button.astro';
-import { Globe, Mail, Phone } from 'lucide-astro';
-import { RESUME_DATA } from '../data/resume-data';
-import { PROJECTS, type ProjectCategory } from '../data/projects-data';
+import Badge from '../components/ui/badge.astro';
+import Tabs from '../components/ui/tabs.astro';
+import TabsList from '../components/ui/tabs-list.astro';
+import TabsTrigger from '../components/ui/tabs-trigger.astro';
+import TabsContent from '../components/ui/tabs-content.astro';
 
-const avatarUrl = (import.meta.env.BASE_URL.replace(/\/$/, '') + RESUME_DATA.avatarUrl);
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
-const iconMap = {
-  github: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-4"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>`,
-  linkedin: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-4"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>`,
-  x: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-4"><path d="M4 4l11.733 16h4.267l-11.733 -16z"/><path d="M4 20l6.768 -6.768m2.46 -2.46l6.772 -6.772"/></svg>`,
-};
-
-const ORDERED_CATEGORIES = ['personal', 'nimiq', 'external'] as const satisfies ProjectCategory[];
-
-const CATEGORY_CONFIG: Record<ProjectCategory, { title: string; blurb: string }> = {
-  personal: {
-    title: 'Personal Projects (`onmax`)',
-    blurb: 'Repositories I initiated and lead end-to-end, covering design systems, tooling, and product surfaces driving the Nimiq ecosystem.',
-  },
-  nimiq: {
-    title: 'Nimiq Organization (`nimiq`)',
-    blurb: 'Core contributions delivered as part of the Nimiq team, spanning product launches, documentation, and operational tooling.',
-  },
-  external: {
-    title: 'External Open Source Contributions',
-    blurb: 'Notable work across the wider OSS community where I shipped meaningful improvements or maintained forks.',
-  },
-};
-
-const groupedProjects = {
-  personal: PROJECTS.filter((project) => project.category === 'personal'),
-  nimiq: PROJECTS.filter((project) => project.category === 'nimiq'),
-  external: PROJECTS.filter((project) => project.category === 'external'),
-} satisfies Record<ProjectCategory, typeof PROJECTS>;
-
-const formatCountLabel = (count: number, singular: string, plural?: string) => {
-  const label = count === 1 ? singular : plural ?? `${singular}s`;
-  return `${count.toLocaleString()} ${label}`;
-};
-
-const formatTimeline = (timeline: { start: string | null; end: string | null; duration: string | null }) => {
-  const start = timeline.start ?? '[Add start date]';
-  const end = timeline.end ?? 'Present';
-  const base = `${start} → ${end}`;
-  return timeline.duration ? `${base} (${timeline.duration})` : base;
-};
-
-const formatCounts = (counts: Record<string, number>) => {
-  const entries = Object.entries(counts)
-    .filter(([, value]) => value > 0)
-    .map(([state, value]) => `${formatCountLabel(value, state.toLowerCase())}`);
-  return entries.length ? entries.join(' · ') : 'none';
-};
+const experienceFiles = await Astro.glob('./experience/*.md');
+const experiences = experienceFiles.map((file) => ({
+  title: file.frontmatter.title,
+  organization: file.frontmatter.organization,
+  role: file.frontmatter.role,
+  category: file.frontmatter.category,
+  duration: file.frontmatter.duration,
+  commitCount: file.frontmatter.commit_count,
+  tech: file.frontmatter.tech || [],
+  url: file.url,
+})).sort((a, b) => (b.commitCount || 0) - (a.commitCount || 0));
 ---
 
 <Layout>
-  <main class="container relative mx-auto scroll-my-12 overflow-auto p-4 print:p-11 md:p-16" id="main-content">
-    <section class="mx-auto w-full max-w-2xl space-y-8 bg-white print:space-y-4">
-      <!-- Header -->
-      <header class="flex items-center justify-between">
-        <div class="flex-1 space-y-1.5">
-          <h1 class="text-2xl font-bold">{RESUME_DATA.name}</h1>
-          <p class="max-w-md text-pretty font-mono text-sm text-foreground/80 print:text-[12px]">
-            {RESUME_DATA.about}
-          </p>
-          <p class="max-w-md items-center text-pretty font-mono text-xs text-foreground">
-            <a
-              class="inline-flex gap-x-1.5 align-baseline leading-none hover:underline"
-              href={RESUME_DATA.locationLink}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Globe class="size-3" />
-              {RESUME_DATA.location}
-            </a>
-          </p>
-
-          <!-- Contact buttons (screen only) -->
-          <ul class="flex list-none gap-x-1 pt-1 font-mono text-sm text-foreground/80 print:hidden">
-            {RESUME_DATA.personalWebsiteUrl && (
-              <li>
-                <Button class="size-8" variant="outline" size="icon" href={RESUME_DATA.personalWebsiteUrl}>
-                  <Globe class="size-4" />
-                </Button>
-              </li>
-            )}
-            {RESUME_DATA.contact.email && (
-              <li>
-                <Button class="size-8" variant="outline" size="icon" href={`mailto:${RESUME_DATA.contact.email}`}>
-                  <Mail class="size-4" />
-                </Button>
-              </li>
-            )}
-            {RESUME_DATA.contact.tel && (
-              <li>
-                <Button class="size-8" variant="outline" size="icon" href={`tel:${RESUME_DATA.contact.tel}`}>
-                  <Phone class="size-4" />
-                </Button>
-              </li>
-            )}
-            {RESUME_DATA.contact.social.map((social) => (
-              <li>
-                <Button class="size-8" variant="outline" size="icon" href={social.url}>
-                  <Fragment set:html={iconMap[social.icon]} />
-                </Button>
-              </li>
-            ))}
-          </ul>
-
-          <div class="pt-2 print:hidden">
-            <Button variant="outline" size="sm" href="/applications/maxiv/">
-              MAX IV Application CV
-            </Button>
+  <main class="container relative mx-auto scroll-my-12 overflow-auto p-4 print:p-11 md:p-16">
+    <div class="mx-auto w-full max-w-3xl space-y-8 bg-white">
+      <header class="space-y-4">
+        <div class="flex items-start justify-between">
+          <div>
+            <h1 class="text-3xl font-bold">Máximo García</h1>
+            <p class="text-foreground/70">Portfolio & Applications</p>
           </div>
-
-          <!-- Print contact -->
-          <div class="hidden gap-x-2 font-mono text-sm text-foreground/80 print:flex print:text-[12px]">
-            {RESUME_DATA.personalWebsiteUrl && (
-              <>
-                <a class="underline hover:text-foreground/70" href={RESUME_DATA.personalWebsiteUrl}>
-                  {new URL(RESUME_DATA.personalWebsiteUrl).hostname}
-                </a>
-                <span>/</span>
-              </>
-            )}
-            {RESUME_DATA.contact.email && (
-              <>
-                <a class="underline hover:text-foreground/70" href={`mailto:${RESUME_DATA.contact.email}`}>
-                  {RESUME_DATA.contact.email}
-                </a>
-                <span>/</span>
-              </>
-            )}
-            {RESUME_DATA.contact.tel && (
-              <a class="underline hover:text-foreground/70" href={`tel:${RESUME_DATA.contact.tel}`}>
-                {RESUME_DATA.contact.tel}
-              </a>
-            )}
-            <span>/</span>
-            <span>MAX IV CV: /applications/maxiv/</span>
-          </div>
+          <a
+            href={`${base}/download-avatar`}
+            class="rounded-md border px-3 py-1.5 text-sm font-medium transition-colors hover:bg-foreground/5 print:hidden"
+          >
+            Download Avatar
+          </a>
         </div>
 
-        <Avatar
-          class="size-28"
-          src={avatarUrl}
-          alt={`${RESUME_DATA.name}'s profile picture`}
-          fallback={RESUME_DATA.initials}
-        />
-      </header>
+        <Tabs defaultValue="applications" class="w-full print:hidden">
+          <TabsList class="w-full justify-start">
+            <TabsTrigger value="applications">Applications</TabsTrigger>
+            <TabsTrigger value="experience">My Experience</TabsTrigger>
+          </TabsList>
 
-      <!-- About -->
-      <Section>
-        <h2 class="text-xl font-bold">About</h2>
-        <p class="text-pretty font-mono text-sm text-foreground/80 print:text-[12px]">
-          {RESUME_DATA.summary}
-        </p>
-      </Section>
-
-      <!-- Work Experience -->
-      <Section>
-        <h2 class="text-xl font-bold">Work Experience</h2>
-        <div class="space-y-4 print:space-y-0">
-          {RESUME_DATA.work.map((work) => (
-            <Card class="py-1 print:py-0">
-              <div class="p-6 print:space-y-1">
-                <div class="flex items-center justify-between gap-x-2 text-base">
-                  <h3 class="inline-flex items-center justify-center gap-x-1 font-semibold leading-none print:text-sm">
-                    <a class="hover:underline" href={work.link} target="_blank" rel="noopener noreferrer">
-                      {work.company}
-                    </a>
-                    <span class="hidden gap-x-1 sm:inline-flex">
-                      {work.badges.map((badge) => (
-                        <Badge variant="secondary" class="align-middle text-xs print:px-1 print:py-0.5 print:text-[8px] print:leading-tight">
-                          {badge}
-                        </Badge>
-                      ))}
-                    </span>
-                  </h3>
-                  <div class="text-sm tabular-nums text-gray-500">
-                    {work.start} - {work.end ?? "Present"}
+          <TabsContent value="applications" class="space-y-6">
+            <!-- MAX IV Application -->
+            <Card class="p-6">
+              <div class="space-y-4">
+                <div class="flex items-start justify-between">
+                  <div>
+                    <h2 class="text-xl font-semibold">Fullstack Web Developer</h2>
+                    <p class="text-sm text-foreground/70">MAX IV, Lunds universitet</p>
                   </div>
+                  <Badge>Active</Badge>
                 </div>
 
-                <h4 class="font-mono text-sm font-semibold leading-none print:text-[12px]">
-                  {work.title}
-                </h4>
-
-                <div class="mt-2 text-xs text-foreground/80 print:mt-1 print:text-[10px] text-pretty">
-                  {work.description}
+                <div class="flex gap-4 text-sm text-foreground/60">
+                  <span>Posted: Sep 15, 2025</span>
+                  <span>Deadline: Oct 5, 2025</span>
                 </div>
 
-                <div class="mt-2">
-                  <ul class="-mx-2 flex flex-wrap gap-1 sm:hidden">
-                    {work.badges.map((badge) => (
-                      <Badge variant="secondary" class="align-middle text-xs print:px-1 print:py-0.5 print:text-[8px] print:leading-tight">
-                        {badge}
-                      </Badge>
-                    ))}
-                  </ul>
+                <div class="grid gap-2 sm:grid-cols-4">
+                  <a
+                    href={`${base}/maxiv/job-post`}
+                    class="rounded-md border px-4 py-2 text-center text-sm font-medium transition-colors hover:bg-foreground/5"
+                  >
+                    Job Posting
+                  </a>
+                  <a
+                    href={`${base}/maxiv/cover-letter`}
+                    class="rounded-md border px-4 py-2 text-center text-sm font-medium transition-colors hover:bg-foreground/5"
+                  >
+                    Cover Letter
+                  </a>
+                  <a
+                    href={`${base}/maxiv/cv`}
+                    class="rounded-md border px-4 py-2 text-center text-sm font-medium transition-colors hover:bg-foreground/5"
+                  >
+                    CV
+                  </a>
+                  <a
+                    href={`${base}/maxiv/application-form-data`}
+                    class="rounded-md border px-4 py-2 text-center text-sm font-medium transition-colors hover:bg-foreground/5"
+                  >
+                    Form Data
+                  </a>
                 </div>
               </div>
             </Card>
-          ))}
-        </div>
-      </Section>
 
-      <!-- Education -->
-      <Section>
-        <h2 class="text-xl font-bold">Education</h2>
-        <div class="space-y-4">
-          {RESUME_DATA.education.map((education) => (
-            <Card>
-              <div class="p-6">
-                <div class="flex items-center justify-between gap-x-2 text-base">
-                  <h3 class="font-semibold leading-none">
-                    {education.school}
-                  </h3>
-                  <div class="text-sm tabular-nums text-gray-500">
-                    {education.start} - {education.end}
+            <!-- IKEA Application -->
+            <Card class="p-6">
+              <div class="space-y-4">
+                <div class="flex items-start justify-between">
+                  <div>
+                    <h2 class="text-xl font-semibold">Senior Fullstack Developer</h2>
+                    <p class="text-sm text-foreground/70">IKEA</p>
                   </div>
+                  <Badge variant="secondary">Draft</Badge>
                 </div>
-                <div class="mt-2 text-foreground/80 print:text-[12px]">
-                  {education.degree}
+
+                <div class="grid gap-2 sm:grid-cols-3">
+                  <a
+                    href={`${base}/ikea-senior-fullstack`}
+                    class="rounded-md border px-4 py-2 text-center text-sm font-medium transition-colors hover:bg-foreground/5"
+                  >
+                    CV
+                  </a>
                 </div>
               </div>
             </Card>
-          ))}
-        </div>
-      </Section>
+          </TabsContent>
 
-      <!-- Skills -->
-      <Section>
-        <h2 class="text-xl font-bold">Skills</h2>
-        <ul class="flex list-none flex-wrap gap-1 p-0">
-          {RESUME_DATA.skills.map((skill) => (
-            <li>
-              <Badge class="print:text-[10px]">{skill}</Badge>
-            </li>
-          ))}
-        </ul>
-      </Section>
+          <TabsContent value="experience" class="space-y-6">
+            <div class="space-y-4">
+              <p class="text-sm text-foreground/70">
+                {experiences.length} projects sorted by commit count
+              </p>
 
-      <!-- Projects & Contributions -->
-      <Section class="print-force-new-page space-y-4">
-        <h2 class="text-xl font-bold">Projects &amp; Contributions (Sep 29, 2022 – Sep 29, 2025)</h2>
-        <p class="font-mono text-sm text-foreground/80 print:text-[12px]">
-          Comprehensive catalogue of every public repository where I logged 5+ commits over the last three years. Each entry includes role, scope, highlight examples, and collaboration stats so this page can be curated per application.
-        </p>
-
-        {ORDERED_CATEGORIES.map((category) => {
-          const sectionProjects = groupedProjects[category];
-          if (!sectionProjects.length) return null;
-
-          return (
-            <div class="space-y-3">
-              <div class="space-y-1">
-                <h3 class="text-lg font-semibold">{CATEGORY_CONFIG[category].title}</h3>
-                <p class="font-mono text-xs text-foreground/70 print:text-[11px]">
-                  {CATEGORY_CONFIG[category].blurb}
-                </p>
-              </div>
-
-              <div class="space-y-3">
-                {sectionProjects.map((project) => (
-                  <Card class="border">
-                    <div class="space-y-3 p-4 print:space-y-2 print:p-3">
-                      <div class="flex flex-col gap-y-1 sm:flex-row sm:items-start sm:justify-between">
-                        <div>
-                          <h4 class="text-base font-semibold leading-tight print:text-sm">
-                            {project.name}
-                            <span class="text-xs font-normal text-foreground/60"> — {project.role}</span>
-                          </h4>
-                          <div class="font-mono text-[11px] text-foreground/60 print:text-[10px]">
-                            {project.nameWithOwner}
-                          </div>
-                        </div>
-                        <div class="flex flex-wrap gap-1">
-                          <Badge variant="secondary" class="px-2 py-0 text-[10px] print:px-1 print:py-0.5 print:text-[8px] print:leading-tight">
-                            {formatCountLabel(project.timeline.commitCount, 'commit')}
+              {experiences.map((exp) => (
+                <Card class="p-6">
+                  <div class="space-y-3">
+                    <div class="flex items-start justify-between gap-4">
+                      <div class="flex-1">
+                        <a href={exp.url} class="group">
+                          <h3 class="text-lg font-semibold group-hover:underline">
+                            {exp.title}
+                          </h3>
+                        </a>
+                        <p class="text-sm text-foreground/70">{exp.organization}</p>
+                        {exp.role && (
+                          <p class="text-xs text-foreground/60">{exp.role}</p>
+                        )}
+                      </div>
+                      <div class="text-right">
+                        {exp.commitCount && (
+                          <Badge variant="secondary" class="text-xs">
+                            {exp.commitCount} commits
                           </Badge>
-                          {project.timeline.duration && (
-                            <Badge variant="secondary" class="px-2 py-0 text-[10px] print:px-1 print:py-0.5 print:text-[8px] print:leading-tight">
-                              {project.timeline.duration}
-                            </Badge>
-                          )}
-                        </div>
-                      </div>
-
-                      <p class="font-mono text-xs text-foreground/80 print:text-[10px]">
-                        {project.summary}
-                      </p>
-
-                      <div class="font-mono text-[11px] text-foreground/70 print:text-[10px]">
-                        Timeline: {formatTimeline(project.timeline)}
-                      </div>
-
-                      <div class="flex flex-wrap gap-1">
-                        {project.stack.map((tech) => (
-                          <Badge variant="secondary" class="px-2 py-0 text-[10px] print:px-1 print:py-0.5 print:text-[8px] print:leading-tight">
-                            {tech}
-                          </Badge>
-                        ))}
-                      </div>
-
-                      <div class="space-y-1">
-                        <h5 class="text-sm font-semibold print:text-xs">Highlights</h5>
-                        <ul class="space-y-1 font-mono text-[11px] text-foreground/80 print:text-[10px]">
-                          {project.highlights.map((highlight) => (
-                            <li>
-                              <span class="font-semibold text-foreground">{highlight.label}</span>: {highlight.examples.join(' · ')}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-
-                      <div class="font-mono text-[11px] text-foreground/70 print:text-[10px]">
-                        Collaboration — Pull requests: {formatCounts(project.collaboration.pullRequests)}; Issues: {formatCounts(project.collaboration.issues)}
-                      </div>
-
-                      {(project.collaboration.samplePRs.length > 0 || project.collaboration.sampleIssues.length > 0) && (
-                        <div class="space-y-1 font-mono text-[11px] text-foreground/70 print:text-[10px]">
-                          {project.collaboration.samplePRs.length > 0 && (
-                            <div>
-                              <span class="font-semibold text-foreground">Sample PRs:</span>
-                              <ul class="ml-3 list-disc space-y-0.5">
-                                {project.collaboration.samplePRs.map((pr) => (
-                                  <li>
-                                    <a href={pr.url} target="_blank" rel="noopener noreferrer" class="underline hover:text-foreground/70">
-                                      {pr.title}
-                                    </a>
-                                    <span class="text-foreground/50"> ({pr.state.toLowerCase()})</span>
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          )}
-                          {project.collaboration.sampleIssues.length > 0 && (
-                            <div>
-                              <span class="font-semibold text-foreground">Sample issues:</span>
-                              <ul class="ml-3 list-disc space-y-0.5">
-                                {project.collaboration.sampleIssues.map((issue) => (
-                                  <li>
-                                    <a href={issue.url} target="_blank" rel="noopener noreferrer" class="underline hover:text-foreground/70">
-                                      {issue.title}
-                                    </a>
-                                    <span class="text-foreground/50"> ({issue.state.toLowerCase()})</span>
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          )}
-                        </div>
-                      )}
-
-                      <div class="font-mono text-[11px] text-foreground/70 print:text-[10px]">
-                        Links:{' '}
-                        {project.links.map((link, index) => (
-                          <Fragment>
-                            {index > 0 && <span> · </span>}
-                            <a href={link.url} target="_blank" rel="noopener noreferrer" class="underline hover:text-foreground/70">
-                              {link.label}
-                            </a>
-                          </Fragment>
-                        ))}
-                      </div>
-
-                      <div class="font-mono text-[11px] text-foreground/70 print:text-[10px]">
-                        Impact: {project.impact}
+                        )}
                       </div>
                     </div>
-                  </Card>
-                ))}
-              </div>
+
+                    {exp.duration && (
+                      <div class="text-xs text-foreground/60">
+                        {exp.duration.human}
+                      </div>
+                    )}
+
+                    {exp.tech && exp.tech.length > 0 && (
+                      <div class="flex flex-wrap gap-1">
+                        {exp.tech.slice(0, 5).map((tech: string) => (
+                          <span class="rounded-md bg-foreground/5 px-2 py-1 text-xs font-mono">
+                            {tech}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </Card>
+              ))}
             </div>
-          );
-        })}
-      </Section>
-    </section>
+          </TabsContent>
+        </Tabs>
+      </header>
+    </div>
   </main>
 </Layout>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const tabsContainer = document.querySelector('[data-tabs]');
+    if (!tabsContainer) return;
+
+    const defaultValue = tabsContainer.getAttribute('data-default-value') || 'applications';
+    const triggers = tabsContainer.querySelectorAll('[data-tabs-trigger]');
+    const contents = tabsContainer.querySelectorAll('[data-tabs-content]');
+
+    function activateTab(value: string) {
+      triggers.forEach(trigger => {
+        const triggerValue = trigger.getAttribute('data-value');
+        if (triggerValue === value) {
+          trigger.setAttribute('data-state', 'active');
+        } else {
+          trigger.setAttribute('data-state', 'inactive');
+        }
+      });
+
+      contents.forEach(content => {
+        const contentValue = content.getAttribute('data-value');
+        if (contentValue === value) {
+          content.classList.remove('hidden');
+        } else {
+          content.classList.add('hidden');
+        }
+      });
+
+      window.location.hash = value;
+    }
+
+    triggers.forEach(trigger => {
+      trigger.addEventListener('click', () => {
+        const value = trigger.getAttribute('data-value');
+        if (value) activateTab(value);
+      });
+    });
+
+    const initialTab = window.location.hash.slice(1) || defaultValue;
+    activateTab(initialTab);
+  });
+</script>

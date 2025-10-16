@@ -1,0 +1,14 @@
+---
+import { cn } from "@/lib/utils";
+
+interface Props {
+  class?: string;
+  defaultValue?: string;
+}
+
+const { class: className, defaultValue = 'applications' } = Astro.props;
+---
+
+<div class={cn("w-full", className)} data-tabs data-default-value={defaultValue}>
+  <slot />
+</div>

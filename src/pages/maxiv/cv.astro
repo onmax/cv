@@ -1,0 +1,194 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Section from '../../components/ui/section.astro';
+import ResumeTwoColumn from '../../components/resume/ResumeTwoColumn.astro';
+import { RESUME_DATA } from '../../data/resume-data';
+
+const avatarUrl = (import.meta.env.BASE_URL.replace(/\/$/, '') + RESUME_DATA.avatarUrl);
+const phoneDisplay = RESUME_DATA.contact.tel;
+const phoneDial = RESUME_DATA.contact.tel.replace(/\s+/g, '');
+type ContactLink = {
+  icon?: 'github' | 'mail' | 'phone';
+  href: string;
+  text: string;
+};
+
+const contactLinks: ContactLink[] = [];
+const primaryGithub = RESUME_DATA.contact.social?.[0];
+
+if (primaryGithub) {
+  contactLinks.push({
+    icon: 'github',
+    href: primaryGithub.url,
+    text: primaryGithub.url.replace(/^https?:\/\//, ''),
+  });
+}
+
+contactLinks.push(
+  {
+    icon: 'mail',
+    href: `mailto:${RESUME_DATA.contact.email}`,
+    text: RESUME_DATA.contact.email,
+  },
+  {
+    icon: 'phone',
+    href: `tel:${phoneDial}`,
+    text: phoneDisplay,
+  },
+);
+
+const strengths = [
+  '<strong>Nimiq Validators API</strong>: run 720 blockchain batches every 12 h with Slack observability and four-hour hotfix turnaround when anomalies appear.',
+  '<strong>Python + Supabase pipelines</strong>: blend PostGIS, partner CSVs, Google Business feeds, and analytics snapshots through scripted ingestion.',
+  '<strong>Security-first delivery</strong>: review wallet flows, enforce rate limits, and automate dependency/code-scanning in CI.',
+  '<strong>Research translation</strong>: co-designed Alastria blockchain specs with LACChain stakeholders, delivering secure, privacy-aware services for Latin American partners.'
+];
+
+const skills = {
+  'Core languages': ['Python 3', 'TypeScript/JavaScript', 'Go (tools)', 'HTML/CSS'],
+  'Frameworks & UI': ['Vue', 'Nuxt', 'Node.js', 'Tailwind CSS', 'UnoCSS'],
+  'Data & services': ['Supabase/PostgreSQL', 'PostGIS', 'Drizzle ORM', 'REST/GraphQL APIs', 'WebSockets', 'Cloudflare Workers/Queues'],
+  'Infrastructure & ops': ['Linux', 'Docker Compose', 'Cloudflare Pages/D1', 'GitHub Actions', 'Vitest', 'Rate limiting & security reviews', 'Slack monitoring'],
+  'DX & documentation': ['VitePress', 'Typedoc', 'OpenRPC', 'TutorialKit', 'Accessibility-focused UI']
+};
+
+const workExperience = [
+  {
+    company: 'Nimiq',
+    role: 'Frontend / Fullstack Engineer',
+    period: 'Jan 2022 – Present',
+    location: 'Remote',
+    highlights: [
+      'Operate the Validators API (Cloudflare cron + Supabase/PostGIS + Slack alerts) and delivered a four-hour hotfix plus 48 h patch when mid-2025 epochs skipped validators.',
+      'Lead the Crypto Map monorepo—Supabase Edge Functions, Nuxt, and Python loaders—to keep 29k+ merchant records accurate and fast.',
+      'Maintain Nimiq’s Developer Center + UI system, enforce GitHub Actions lint/type/test gates with lightweight Vitest coverage, and wire in wallet-focused security checks (rate limits, dependency audits, secret hygiene) across 50+ repos.'
+    ]
+  },
+  {
+    company: 'LACChain/Alastria (Inetum)',
+    role: 'SSI Researcher & Fullstack Developer',
+    period: 'Aug 2020 – Dec 2021',
+    location: 'Remote',
+    highlights: [
+      'Co-designed security and privacy specifications for the Alastria blockchain within LACChain, translating Spanish research into actionable standards and leading cross-organisation workshops across Latin America.',
+      'Built GDPR-compliant identity services (TypeScript + Spring Boot), contributed to W3C-aligned specs, and automated Docker/nginx deployments for partner pilots.'
+    ]
+  },
+  {
+    company: 'Independent Consulting',
+    role: 'Freelance Engineer & Student',
+    period: 'Jan 2017 – Apr 2021',
+    location: 'Remote',
+    highlights: [
+      'Delivered conference, ecommerce, and university platforms with real-time features while balancing rapid iteration with maintainable architectures while studying full-time at Universidad Politécnica de Madrid.'
+    ]
+  }
+];
+
+const selectedProjects = [
+  '<strong>Tutorial Platform</strong> (`nimiq.guide`): Astro + TutorialKit experience that runs fully in-browser via WebContainer so learners can build without local installs.',
+  '<strong>Starter kits & automation tooling</strong>: Nuxt/Cloudflare templates plus UnoCSS presets and Python analytics scripts standardising lint/type/test across 50+ repos.',
+  '<strong>Open-source contributions</strong>: maintain `albatross-rpc-client-ts`, `nimiq-ui`, `vue-bits`, and contribute to the UNJS ecosystem (`nuxt-hub/core`, `unjs/unstorage`).',
+  '<strong>Community & recognition</strong>: Winner, Huawei Student Developer Hackathon Sweden 2022; active speaker/mentor in developer communities.'
+];
+
+const languages = ['Spanish (native)', 'English (C1)', 'Swedish (A1, learning)'];
+---
+
+<Layout title="MAX IV Fullstack CV - Máximo García">
+  <ResumeTwoColumn
+    name={RESUME_DATA.name}
+    title="Fullstack Engineer · Developer Experience Specialist"
+    location={RESUME_DATA.location}
+    locationLink={RESUME_DATA.locationLink}
+    avatarUrl={avatarUrl}
+    contacts={contactLinks}
+  >
+    <Section slot="left" class="gap-y-1">
+      <h2 class="text-xl font-semibold text-foreground">Technical Skills</h2>
+      <div class="space-y-1.5 font-mono text-[12px] leading-snug text-foreground/80 print:space-y-0.5 print:text-[10px]">
+        {Object.entries(skills).map(([category, items]) => (
+          <p>
+            <span class="font-semibold uppercase tracking-wide text-foreground/70">{category}:</span> {items.join(', ')}
+          </p>
+        ))}
+      </div>
+    </Section>
+
+    <Section slot="left" class="gap-y-1">
+      <h2 class="text-xl font-semibold text-foreground">Strengths</h2>
+      <ul class="space-y-1.5 font-mono text-[12px] leading-snug text-foreground/80 print:space-y-0.5 print:text-[10px]">
+        {strengths.map((strength) => (
+          <li class="ml-3 list-disc" set:html={strength} />
+        ))}
+      </ul>
+    </Section>
+
+    <Section slot="left" class="gap-y-1">
+      <h2 class="text-xl font-semibold text-foreground">Languages</h2>
+      <ul class="space-y-1.5 font-mono text-[12px] text-foreground/80 print:space-y-0.5 print:text-[10px]">
+        {languages.map((language) => (
+          <li class="ml-3 list-disc">{language}</li>
+        ))}
+      </ul>
+    </Section>
+
+    <Section slot="right" class="gap-y-1">
+      <h2 class="text-xl font-semibold text-foreground">Profile</h2>
+      <p class="font-mono text-[12px] text-foreground/80 leading-snug print:text-[10px]">
+        Fullstack engineer with 7 years delivering data-rich platforms, Python ingestion scripts, and developer tooling across Linux, Cloudflare, and Docker-backed stacks. I translate complex operational requirements into observable, tested services and serve as the first point of call for Nimiq's validator telemetry.
+      </p>
+    </Section>
+
+    <Section slot="right" class="gap-y-1">
+      <h2 class="text-lg font-semibold text-foreground">Professional Experience</h2>
+      <div class="flex flex-col gap-2 print:gap-1">
+        {workExperience.map((job) => (
+          <article class="p-3 print:p-2">
+            <div class="flex items-start justify-between gap-x-3">
+              <div>
+                <h3 class="text-[14px] font-semibold text-foreground">{job.company}</h3>
+                <p class="text-[11px] font-mono text-foreground/70">{job.role}</p>
+              </div>
+              <div class="text-right">
+                <p class="text-[11px] tabular-nums text-foreground/60">{job.period}</p>
+                <p class="text-[10px] font-mono text-foreground/50">{job.location}</p>
+              </div>
+            </div>
+            <ul class="mt-1 space-y-1 text-[11px] font-mono text-foreground/80 leading-snug print:mt-0.5 print:text-[9px]">
+              {job.highlights.map((highlight) => (
+                <li class="ml-3 list-disc" set:html={highlight
+                  .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                  .replace(/`(.*?)`/g, '<code class="text-[9px]">$1</code>')} />
+              ))}
+            </ul>
+          </article>
+        ))}
+      </div>
+    </Section>
+
+    <Section slot="right" class="gap-y-1">
+      <h2 class="text-lg font-semibold text-foreground">Selected Projects &amp; Community</h2>
+      <ul class="space-y-1.5 font-mono text-[11px] text-foreground/80 leading-snug print:space-y-0.5 print:text-[9px]">
+        {selectedProjects.map((item) => (
+          <li class="ml-3 list-disc" set:html={item.replace(/`(.*?)`/g, '<code class="text-[9px]">$1</code>')} />
+        ))}
+      </ul>
+    </Section>
+
+    <Section slot="right" class="gap-y-1">
+      <h2 class="text-xl font-semibold text-foreground">Education</h2>
+      <div class="p-3 font-mono text-[12px] text-foreground/80 leading-snug print:p-2 print:text-[10px]">
+        <div class="flex items-start justify-between gap-x-3">
+          <div>
+            <h3 class="text-[13px] font-semibold text-foreground">B.Sc. Computer Science &amp; Engineering</h3>
+            <p class="text-[11px] text-foreground/70">Universidad Politécnica de Madrid (UPM), Spain</p>
+          </div>
+          <p class="text-[10px] tabular-nums text-foreground/60">Sep 2016 – Jan 2021</p>
+        </div>
+        <p>Erasmus Exchange at Uppsala University (Sweden).</p>
+        <p>Thesis: <em>Bike sharing demand forecasting using Recurrent Neural Networks</em> (Honours).</p>
+      </div>
+    </Section>
+  </ResumeTwoColumn>
+</Layout>

@@ -1,0 +1,124 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const content = `# Máximo García
+
+**Senior Fullstack Engineer**
+Lund, Sweden · +34 652 957 762 · maximogarciamtnez@gmail.com · [github.com/onmax](https://github.com/onmax)
+
+---
+
+## Profile
+
+Senior fullstack engineer with 6+ years designing low-latency web platforms, data pipelines, and developer tooling. I specialise in TypeScript/Nuxt, Node.js, Supabase/PostgreSQL, Cloudflare, and CI/CD automation. My recent work focuses on migrating monolithic stacks to modular, event-aware services, introducing feedback loops that keep operations lean, and shipping reliable experiences trusted by global user bases. I thrive in cross-functional teams, translate product requirements into resilient architecture, and drive initiatives end-to-end—from discovery and UX prototyping to observability and rollout.
+
+---
+
+## IKEA Fit Highlights
+
+- **Legacy to service-centric**: Led the Crypto Map rewrite from a tightly coupled Vue SPA into a monorepo of independently deployable services (Nuxt UI, Supabase Edge Functions, Slack bots). Reduced initial load time from >10 s to ~4 s while introducing dataset toggles that enable side-by-side cutovers—experience directly applicable to decomposing IKEA's customer returns monoliths.
+- **Complex integrations**: Engineered the Validators API platform, orchestrating hourly blockchain ingestions, Slack alerting, and REST endpoints consumed by wallets and partner dashboards. Demonstrated ability to stitch heterogeneous systems into cohesive, reliable journeys.
+- **DevOps ownership**: Built automated release pipelines (GitHub Actions, pnpm workspaces) for 50+ open-source packages; operate four parallel environments (preview/prod × mainnet/testnet) with confidence.
+- **Outcome-driven UX**: Delivered embeddable feedback widgets, RPC playgrounds, and icon explorers that transformed passive documentation into interactive tools, increasing developer task completion and reducing support wait time.
+- **Global mindset**: Remote-first collaboration across Europe, Americas, and Asia; comfortable aligning with stakeholders in product, support, logistics, and compliance. Fluent in Spanish and English, conversational in Swedish.
+
+---
+
+## Technical Skills
+
+- **Languages & Frameworks**: TypeScript, JavaScript, Vue 3, Nuxt, Node.js, Go (prototyping), Python, React.
+- **Backend & Data**: Supabase/PostgreSQL, PostGIS, Drizzle ORM, REST/GraphQL APIs, Cloudflare Workers/Queues, WebSockets, cron pipelines.
+- **DevOps & Quality**: GitHub Actions, Cloudflare Pages, Netlify, Docker, automated testing (Vitest, Jest, Playwright basics), observability via custom Slack reporting.
+- **Architecture**: Event-driven data ingestion, micro frontends, performance optimisation, caching strategies, schema validation (Valibot, JSON Schema).
+- **Tooling & Collaboration**: pnpm monorepos, Storybook/Histoire, VitePress, Figma co-design, Slack/Linear for async coordination.
+
+---
+
+## Professional Experience
+
+### Frontend / Fullstack Engineer — Nimiq (Remote)
+*Jan 2022 – Present*
+- Transitioned Crypto Map's legacy stack into a service-oriented architecture: Supabase/PostGIS functions for geospatial queries, Cloudflare cron workers for cluster computation, reusable Nuxt-based UIs, and a Slack moderation bot. Enabled non-technical staff to publish new datasets in minutes and keep data fresh for 29k+ locations.
+- Delivered the Validators API, a TypeScript service syncing ~720 blockchain batches per epoch. Added automated Slack alerts, retry logic, and dataset "preview → prod" toggles that mirror the controlled rollouts IKEA expects across markets.
+- Built the company's developer experience platform (Developer Center) with a bespoke VitePress theme, interactive widgets, and continuous document generation from OpenRPC/Typedoc sources—keeping stakeholders aligned without manual updates.
+- Created a cross-product feedback platform (web widget + Nuxt backend) that funnels customer signals into GitHub and Slack. Reduced triage friction and provided telemetry tags to prioritise fixes.
+- Managed release pipelines and quality for 50+ open-source packages (\`nimiq-ui\`, \`nimiq-css\`, \`albatross-rpc-client-ts\`, starter kits), ensuring downstream teams receive timely, backwards-compatible updates.
+
+### SSI Researcher & Fullstack Developer — LACChain/Alastria (Inetum)
+*Aug 2020 – Dec 2021*
+- Built identity services with Spring Boot microservices, TypeScript frontends, and blockchain communication libraries, complying with GDPR and W3C standards.
+- Introduced automated deployment workflows (Docker, nginx) and mentored junior developers on code reviews and best practices.
+
+### Freelance Engineer — Various Clients
+*Jan 2017 – Apr 2021*
+- Delivered web applications for universities and NGOs, including multi-tenant conference tooling and e-commerce operations, balancing rapid iteration with maintainability.
+
+---
+
+## Selected Projects
+
+- **Crypto Map Platform** — Modular map experience integrating Google Business API ingestion, dataset scoping, Nuxt UI, and Slack-based moderation. Achieved 60% faster loads and eliminated duplicate third-party API costs through on-demand media caching.
+- **Validators API** — Production-ready API and dashboard with hourly data syncs, automated alerts, and dataset QA controls; supports wallet partners and analytics teams.
+- **Nimiq Feedback** — Embeddable widget + Nuxt backend routing submissions to GitHub issues and Slack; adopted across documentation, payment widgets, and tutorials.
+- **Nimiq UI System** — Design tokens, UnoCSS presets, VitePress theme, and MapLibre styles consumed by multiple Nimiq products; ensures consistent branding and rapid onboarding.
+
+---
+
+## Education
+
+**B.Sc. Computer Science & Engineering** — Universidad Politécnica de Madrid (UPM), Spain
+*Sep 2016 – Jan 2021* · Erasmus Exchange at Uppsala University (Sweden).
+Thesis on bike-sharing demand forecasting (Honours).
+
+---
+
+## Languages
+
+Spanish (native) · English (C1) · Swedish (A2) · German (A2)
+
+---
+
+## Why IKEA
+
+IKEA's ambition to reinvent customer returns through modern, event-driven platforms aligns with the problems I solve daily—decomposing legacy flows, building reliable integration layers, and empowering teams with autonomous tooling. I am excited to bring my experience modernising data-heavy services, crafting delightful UX, and scaling developer workflows to IKEA's Customer Returns domain to improve both co-worker efficiency and customer trust.
+`;
+
+const metadata = {
+  link: 'https://jobs.ikea.com/sv/jobb/malmo/senior-software-engineer-fullstack-customer-returns/24107/86453536448',
+  created: '2025-09-30',
+  company: 'IKEA',
+  position: 'Senior Software Engineer [Fullstack] - Customer Returns',
+  location: 'Malmö, Skåne Län, Sweden',
+  job_id: '284882',
+  department: 'IT och Digitala lösningar',
+  job_type: 'Full Time',
+  status: 'pending'
+};
+---
+
+<Layout title={`${metadata.position} - ${metadata.company}`}>
+  <main class="container relative mx-auto scroll-my-12 overflow-auto p-4 print:p-11 md:p-16">
+    <article class="mx-auto w-full max-w-2xl space-y-6 bg-white prose prose-sm print:prose-xs">
+      <div class="not-prose mb-8 border-b pb-4">
+        <div class="text-xs text-foreground/60 space-y-1">
+          <div><strong>Company:</strong> {metadata.company}</div>
+          <div><strong>Position:</strong> {metadata.position}</div>
+          <div><strong>Location:</strong> {metadata.location}</div>
+          <div><strong>Application Date:</strong> {metadata.created}</div>
+          <div><strong>Job Link:</strong> <a href={metadata.link} target="_blank" rel="noopener noreferrer" class="underline">{metadata.link}</a></div>
+        </div>
+      </div>
+      <div set:html={content.split('\n').map(line => {
+        if (line.startsWith('# ')) return `<h1>${line.slice(2)}</h1>`;
+        if (line.startsWith('## ')) return `<h2>${line.slice(3)}</h2>`;
+        if (line.startsWith('### ')) return `<h3>${line.slice(4)}</h3>`;
+        if (line.startsWith('**') && line.endsWith('**')) return `<p><strong>${line.slice(2, -2)}</strong></p>`;
+        if (line.startsWith('- ')) return `<li>${line.slice(2)}</li>`;
+        if (line === '---') return '<hr />';
+        if (line.startsWith('*') && line.endsWith('*')) return `<p><em>${line.slice(1, -1)}</em></p>`;
+        if (line.trim() === '') return '';
+        return `<p>${line}</p>`;
+      }).join('\n')} />
+    </article>
+  </main>
+</Layout>

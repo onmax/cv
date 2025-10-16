@@ -2,7 +2,7 @@
 
 **Fullstack Developer**, Lund (Suecia)  
 [github.com/onmax](https://github.com/onmax) | +34 652 957 762  
-maximo.garcia.martinez@outlook.com | @onmax
+maximogarciamtnez@gmail.com | @onmax
 
 ## Objetivo
 Como desarrollador web apasionado con un historial probado de creación de aplicaciones web innovadoras, disfruto resolviendo desafíos complejos mediante soluciones creativas y eficientes. Mi experiencia se extiende por múltiples frameworks frontend, sobre todo Vue, lo que me permite ofrecer sitios web de vanguardia centrados en la experiencia de usuario. Busco colaborar con profesionales de ideas afines para crear experiencias digitales extraordinarias. Motivado por la oportunidad de trabajar con midudev, estoy listo para aportar una combinación de creatividad, habilidad técnica y enfoque colaborativo a proyectos innovadores.
